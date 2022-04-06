@@ -1,8 +1,8 @@
-package Pharamacy_Management_System;
+package Pharmacy_Management_System;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,28 +14,54 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Interface extends UserLogin {
-  private JPanel header, leftPanel, middPanel,middPanel1, middPanel2, middPanel3, middPanel4, middPanel41;
+  private JPanel header, leftPanel, middPanel,middPanel1_ManageMedicine, middPanel2_CheckStock, middPanel3_SaleRecord, middPanel4, middPanel_RecommendedProducts, middPanel41;
   private JLabel name;
   private int idFound,j;
-  private Connection conn;
+  private Connection conn,conn5;
   private int idFound1;
   public JFrame jf;
   private int stockCheckerAgainst;
-  private ResultSet res1, res2, res3, res4, res5, res6, res7, res8;
-  private Statement stmt;
+  private ResultSet res05, res1, res2, res3, res4, res5, res6, res7, res8;
+  private Statement stmt,stmt5;
   PreparedStatement Pstatement;
-  String dataPanel2[][],dataPanel3[][], dataPanel4[][];
-  String columnsPanel2[],columnsPanel3[], columnPanel4[];
+  int qCount,sCount;
+  String dataPanel2[][],dataPanel3[][], dataPanel4[][], dataPanel5[][];
+  String columnsPanel2[],columnsPanel3[], columnPanel4[], columnPanel5[];
   private JLabel jl0, jl1, jl2, jl3, jl4, jl5, jl6, jl7, jl8, dateLabel;
   private JTextField jtf0, jtf1, jtf2, jtf3, jtf4, jtf5, jtf6, jtf7, jtf8;
   private JButton jb1, jb2, jb3, jb4;
-  JButton jbManageMedicine, jbCheckStock, jbSaleRecord, btnCustomerDeal, btnLogout;
+  JButton jbManageMedicine, jbCheckStock, jbSaleRecord, btnCustomerDeal , btnRecommendedProducts, btnLogout;
   public Interface(String userName) {
     
     jframe.dispose();
     idFound = 0;
     jf = new JFrame("Main Page");
     conn = null;
+    
+    
+    // Query for reminder of low stock.
+    try{  
+    	Connection con=DriverManager.getConnection(  
+    	"jdbc:mysql://localhost:3306/pharmacydb","root","root");  
+    	Statement stmt=con.createStatement();  
+    	ResultSet rs=stmt.executeQuery("select COUNT(*) from pharmacydb.stock");  
+    	rs.next();
+    	qCount=rs.getInt(1);    	
+    	Connection con0=DriverManager.getConnection(  
+    	"jdbc:mysql://localhost:3306/pharmacydb","root","root");  
+    	Statement stmt0=con0.createStatement();  
+    	ResultSet rs0=stmt0.executeQuery("SELECT MIN(medicineqty) FROM pharmacydb.stock;");  
+    	rs0.next();
+    	sCount=rs0.getInt(1);
+    	if(qCount<10 && sCount<10) {
+    		JOptionPane.showMessageDialog(jf,"Stock is Low!!!","Reminder",JOptionPane.WARNING_MESSAGE);
+    	}
+    	}
+    catch(Exception e){ 
+    	System.out.println(e);
+    }  
+ 
+    
     //Panels
 
     header = new JPanel();
@@ -44,16 +70,31 @@ public class Interface extends UserLogin {
 
     middPanel = new JPanel();
 
-    middPanel1 =new JPanel();
+    middPanel1_ManageMedicine =new JPanel();
 
-    middPanel2 = new JPanel();
+    middPanel2_CheckStock = new JPanel();
 
-    middPanel3 = new JPanel();
+    middPanel3_SaleRecord = new JPanel();
 
     middPanel4 = new JPanel();
 
     middPanel41 = new JPanel();
 
+    middPanel_RecommendedProducts = new JPanel();
+    
+    middPanel1_ManageMedicine.setVisible(false);
+
+    middPanel2_CheckStock.setVisible(false);
+    
+    middPanel3_SaleRecord.setVisible(false);
+   
+    middPanel4.setVisible(false);
+    
+    middPanel.setVisible(true);
+    
+    middPanel_RecommendedProducts.setVisible(false);
+    
+    
     //Panel 1 Panel
 
     // Container c;
@@ -61,9 +102,9 @@ public class Interface extends UserLogin {
     // c = jf1.getContentPane();
     // jf1.setLocation(100, 100);
     // jf1.setVisible(true);
-    middPanel1.setBounds(140,70,560,580);
-    middPanel1.setBackground(Color.WHITE);
-    middPanel1.setLayout(null); 
+    middPanel1_ManageMedicine.setBounds(140,70,560,580);
+    middPanel1_ManageMedicine.setBackground(Color.WHITE);
+    middPanel1_ManageMedicine.setLayout(null); 
     // jf1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     jl0 = new JLabel("Medicine ID");
@@ -95,15 +136,15 @@ public class Interface extends UserLogin {
     jl6.setFont(f);
     jl7.setFont(f);
     jl8.setFont(f);
-    middPanel1.add(jl0);
-    middPanel1.add(jl1);
-    middPanel1.add(jl2);
-    middPanel1.add(jl3);
-    middPanel1.add(jl4);
-    middPanel1.add(jl5);
-    middPanel1.add(jl6);
-    middPanel1.add(jl7);
-    middPanel1.add(jl8);
+    middPanel1_ManageMedicine.add(jl0);
+    middPanel1_ManageMedicine.add(jl1);
+    middPanel1_ManageMedicine.add(jl2);
+    middPanel1_ManageMedicine.add(jl3);
+    middPanel1_ManageMedicine.add(jl4);
+    middPanel1_ManageMedicine.add(jl5);
+    middPanel1_ManageMedicine.add(jl6);
+    middPanel1_ManageMedicine.add(jl7);
+    middPanel1_ManageMedicine.add(jl8);
     // jtf1=new JTextField();
     // jtf1.setBounds(350,100,320,50);
     // jtf1.setFont(f);
@@ -138,39 +179,76 @@ public class Interface extends UserLogin {
     jtf0 = new JTextField();
     jtf0.setBounds(250, 20, 240, 30);
     jtf0.setFont(f);
-    middPanel1.add(jtf0);
+    middPanel1_ManageMedicine.add(jtf0);
     jtf1 = new JTextField();
     jtf1.setBounds(250, 60, 240, 30);
     jtf1.setFont(f);
-    middPanel1.add(jtf1);
+    middPanel1_ManageMedicine.add(jtf1);
+    
+    
+//    JComboBox combobox = new JComboBox(new Object[]{"","Ester", "Jordi",
+//            "Jordina", "Jorge", "Sergi"});;
+//            combobox.setBounds(250, 60, 240, 30);
+//            combobox.setFont(f);
+//            AutoCompleteDecorator decorator;
+//            AutoCompleteDecorator.decorate(combobox);
+    
+//    JComboBox TabletCombobox = new JComboBox(new Object[]{""});
+//    String pattern=TabletCombobox.getSelectedItem().toString();
+//    System.out.println(pattern);
+//    //TabletCombobox.setSelectedItem(pattern);
+//
+//    //AutoCompleteDecorator decorator;
+//    //AutoCompleteDecorator.decorate(TabletCombobox);
+//    try
+//    {
+//        Class.forName("com.mysql.jdbc.Driver");
+//        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb","root","root");
+//        Statement st=con.createStatement();
+//        String Query="select name from stock";
+//        ResultSet rs=st.executeQuery(Query);
+//        int i=1;
+//        while(rs.next())
+//        {
+//            TabletCombobox.addItem(rs.getString(1));
+//        }
+//    }
+//    catch(Exception e)
+//    {
+//        System.err.println(e);
+//    }
+//    
+    
+//  middPanel1_ManageMedicine.add(TabletCombobox);
+  
     jtf2 = new JTextField();
     jtf2.setBounds(250, 100, 240, 30);
     jtf2.setFont(f);
-    middPanel1.add(jtf2);
+    middPanel1_ManageMedicine.add(jtf2);
     jtf3 = new JTextField();
     jtf3.setBounds(250, 140, 240, 30);
     jtf3.setFont(f);
-    middPanel1.add(jtf3);
+    middPanel1_ManageMedicine.add(jtf3);
     jtf4 = new JTextField();
     jtf4.setBounds(250, 180, 240, 30);
     jtf4.setFont(f);
-    middPanel1.add(jtf4);
+    middPanel1_ManageMedicine.add(jtf4);
     jtf5 = new JTextField();
     jtf5.setBounds(250, 220, 240, 30);
     jtf5.setFont(f);
-    middPanel1.add(jtf5);
+    middPanel1_ManageMedicine.add(jtf5);
     jtf6 = new JTextField();
     jtf6.setBounds(250, 260, 240, 30);
     jtf6.setFont(f);
-    middPanel1.add(jtf6);
+    middPanel1_ManageMedicine.add(jtf6);
     jtf7 = new JTextField();
     jtf7.setBounds(250, 300, 240, 30);
     jtf7.setFont(f);
-    middPanel1.add(jtf7);
+    middPanel1_ManageMedicine.add(jtf7);
     jtf8 = new JTextField();
     jtf8.setBounds(250, 340, 240, 30);
     jtf8.setFont(f);
-    middPanel1.add(jtf8);
+    middPanel1_ManageMedicine.add(jtf8);
 
     jb1 = new JButton("ADD");
     jb1.setBounds(10, 400, 95, 50);
@@ -192,7 +270,7 @@ public class Interface extends UserLogin {
               //   System.out.println(res.getString(3));
               idFound++;
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-              JOptionPane.showMessageDialog(middPanel1, "Already Added there.", " Error " + res4.getString(1), JOptionPane.ERROR_MESSAGE);
+              JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "Already Added there.", " Error " + res4.getString(1), JOptionPane.ERROR_MESSAGE);
               jtf1.setText(null);
               jtf2.setText(null);
               jtf3.setText(null);
@@ -221,7 +299,7 @@ public class Interface extends UserLogin {
             Pstatement.setDate(8, expDate); //Date.valueOf(jtf6.getText().toString()));
             Pstatement.setInt(9, Integer.parseInt(jtf8.getText()));
             Pstatement.executeUpdate();
-            JOptionPane.showMessageDialog(middPanel1, "Added Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "Added Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
           }
           conn.close();
         } catch (Exception e) {
@@ -229,7 +307,7 @@ public class Interface extends UserLogin {
         }
       }
     });
-    middPanel1.add(jb1);
+    middPanel1_ManageMedicine.add(jb1);
     jb2 = new JButton("CLEAR");
     // jb1.setBounds(1, 400, 95, 50);
     jb2.setBackground(Color.WHITE);
@@ -252,7 +330,7 @@ public class Interface extends UserLogin {
         }
       }
     });
-    middPanel1.add(jb2);
+    middPanel1_ManageMedicine.add(jb2);
     jb3 = new JButton("DELETE");    
     jb3.setBackground(Color.WHITE);
     jb3.setBounds(236, 400, 150, 50);
@@ -269,7 +347,7 @@ public class Interface extends UserLogin {
           while (res5.next()) {
             if (res5.getString(1).equalsIgnoreCase(jtf1.getText()) && res5.getString(2).equalsIgnoreCase(jtf2.getText())) {
               idFound++;
-              JOptionPane.showMessageDialog(middPanel1, "Already Added there.", " Error " + res5.getString(1), JOptionPane.ERROR_MESSAGE);
+              JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "Already Added there.", " Error " + res5.getString(1), JOptionPane.ERROR_MESSAGE);
               jtf1.setText(null);
               jtf2.setText(null);
               jtf3.setText(null);
@@ -293,10 +371,10 @@ public class Interface extends UserLogin {
                 Pstatement.executeUpdate();
               }
             }
-            JOptionPane.showMessageDialog(middPanel1, "Deleted Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "Deleted Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
           }
           if (idFound == 0) {
-            JOptionPane.showMessageDialog(middPanel1, "No Record Found.", " Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "No Record Found.", " Error", JOptionPane.ERROR_MESSAGE);
           }
           conn.close();
         } catch (Exception e) {
@@ -305,7 +383,7 @@ public class Interface extends UserLogin {
       }
     });
     jb3.setFont(new Font("SERIF", Font.PLAIN, 26));
-    middPanel1.add(jb3);
+    middPanel1_ManageMedicine.add(jb3);
     jb4 = new JButton("UPDATE");
     jb4.setBackground(Color.WHITE);
     jb4.setBounds(390, 400, 150, 50);
@@ -368,12 +446,12 @@ public class Interface extends UserLogin {
                 Pstatement.setString(9, jtf1.getText());
                 int rows = Pstatement.executeUpdate();
                 System.out.println("rows    " + rows);
-                JOptionPane.showMessageDialog(middPanel1, "Updated Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "Updated Successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
               }
             }
           }
           if (idFound == 0) {
-            JOptionPane.showMessageDialog(middPanel1, "No Record Found.", " Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(middPanel1_ManageMedicine, "No Record Found.", " Error", JOptionPane.ERROR_MESSAGE);
           }
           conn.close();
         } catch (Exception e) {
@@ -382,7 +460,7 @@ public class Interface extends UserLogin {
       }
     });
     jb4.setFont(new Font("SERIF", Font.PLAIN, 24));
-    middPanel1.add(jb4);
+    middPanel1_ManageMedicine.add(jb4);
     // middPanel=new JPanel();
     // jf2.setLayout(null);
     // jf2=new JFrame("New-One");  
@@ -440,18 +518,18 @@ public class Interface extends UserLogin {
     // jf2.setSize(700,650);
     // jf1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
-    // middPanel1.setBounds(140,70,560,580);
-    // middPanel1.setBackground(Color.WHITE);
-    // middPanel1.setLayout(new FlowLayout()); 
-    jf.add(middPanel1);
+    // middPanel1_ManageMedicine.setBounds(140,70,560,580);
+    // middPanel1_ManageMedicine.setBackground(Color.WHITE);
+    // middPanel1_ManageMedicine.setLayout(new FlowLayout()); 
+    jf.add(middPanel1_ManageMedicine);
 
 
     //Panel 2 Panel
 
-    middPanel2.setLayout(new FlowLayout());
+    middPanel2_CheckStock.setLayout(new FlowLayout());
     //middPanel.setSize(700,650);
-    middPanel2.setBackground(Color.WHITE);
-    middPanel2.setBounds(140, 70, 560, 580);
+    middPanel2_CheckStock.setBackground(Color.WHITE);
+    middPanel2_CheckStock.setBounds(140, 70, 560, 580);
     columnsPanel2 = new String[9];
     columnsPanel2[0] = "ID";
     columnsPanel2[1] = "Name";
@@ -484,21 +562,21 @@ public class Interface extends UserLogin {
       jtab = new JTable(dataPanel2, columnsPanel2);
       JScrollPane sp = new JScrollPane(jtab);
       // sp.setPreferredSize(new Dimension(300,300));
-      middPanel2.add(sp);
-      // middPanel3.add(jtab);
+      middPanel2_CheckStock.add(sp);
+      // middPanel3_SaleRecord.add(jtab);
       conn.close();
     } catch (Exception e) {
       e.printStackTrace();
     }
-    jf.add(middPanel2);
+    jf.add(middPanel2_CheckStock);
 
      //Panel 3 Panel
 
-     middPanel3.setLayout(null);
-     middPanel3.setLayout(new FlowLayout());
+     middPanel3_SaleRecord.setLayout(null);
+     middPanel3_SaleRecord.setLayout(new FlowLayout());
      //middPanel.setSize(700,650);
-     middPanel3.setBackground(Color.WHITE);
-     middPanel3.setBounds(140, 70, 560, 580);
+     middPanel3_SaleRecord.setBackground(Color.WHITE);
+     middPanel3_SaleRecord.setBounds(140, 70, 560, 580);
      columnsPanel3 = new String[6];
      columnsPanel3[0] = "ID";
      columnsPanel3[1] = "Name";
@@ -524,13 +602,13 @@ public class Interface extends UserLogin {
        jtab1 = new JTable(dataPanel3, columnsPanel3);
        JScrollPane sp1 = new JScrollPane(jtab1);
        // sp.setPreferredSize(new Dimension(300,300));
-       middPanel3.add(sp1);
-       // middPanel3.add(jtab);
+       middPanel3_SaleRecord.add(sp1);
+       // middPanel3_SaleRecord.add(jtab);
        conn.close();
      } catch (Exception e) {
        e.printStackTrace();
      }
-     jf.add(middPanel3);
+     jf.add(middPanel3_SaleRecord);
  
 
     //Panel 4 Deal Customer Panel
@@ -551,8 +629,30 @@ public class Interface extends UserLogin {
     JLabel medicineQuantityLabelOfPanel4 = new JLabel();
     medicineQuantityLabelOfPanel4.setText("Medicine Quantity");
     medicineQuantityLabelOfPanel4.setBounds(20, 110, 130, 30);
-    JTextField medicineNameTextFieldOfPanel4 = new JTextField();
+    Object[] list = new Object[100];
+    try {
+    Connection c=DriverManager.getConnection(  
+    		"jdbc:mysql://localhost:3306/pharmacydb","root","root"); 
+    		Statement st=c.createStatement();  
+    		ResultSet rtst=st.executeQuery("select medicinename from pharmacydb.stock");  
+    		int count=0;
+    		while(rtst.next())  {
+    		list[count++]=rtst.getString(1);  
+    		}
+    		c.close();  
+    	}
+    catch(Exception e){
+    		System.out.println(e);
+    	}  
+
+    JComboBox medicineNameTextFieldOfPanel4 =new JComboBox(list);
     medicineNameTextFieldOfPanel4.setBounds(200, 10, 100, 30);
+    
+    AutoCompleteDecorator.decorate(medicineNameTextFieldOfPanel4);
+    
+//    JTextField medicineNameTextFieldOfPanel4 = new JTextField();
+//    medicineNameTextFieldOfPanel4.setBounds(200, 10, 100, 30);
+    
     JTextField medicineTypeTextFieldOfPanel4 = new JTextField();
     medicineTypeTextFieldOfPanel4.setBounds(200, 60, 100, 30);
     JTextField medicineQuantityTextFieldOfPanel4 = new JTextField();
@@ -579,27 +679,32 @@ public class Interface extends UserLogin {
 
       public void actionPerformed(ActionEvent e) {
         try {
+
+        	if(qCount<10 && sCount<10) {
+        		JOptionPane.showMessageDialog(jf,"Stock is Low!!!","Reminder",JOptionPane.WARNING_MESSAGE);
+        	}
+        	
           conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb", "root", "root");
           stmt = conn.createStatement();
           // Statement stmt2 = con.createStatement();
           // Statement stmnt=con.createStatement();
           res2 = stmt.executeQuery("SELECT medicinename,medicinetype,medicineqty,medicinepriceperunit FROM pharmacydb.Stock");
           while (res2.next()) {
-            if (res2.getString(1).equalsIgnoreCase(medicineNameTextFieldOfPanel4.getText()) && res2.getString(2).equalsIgnoreCase(medicineTypeTextFieldOfPanel4.getText())) {
+            if (res2.getString(1).equalsIgnoreCase((String) medicineNameTextFieldOfPanel4.getSelectedItem()) && res2.getString(2).equalsIgnoreCase(medicineTypeTextFieldOfPanel4.getText())) {
               idFound1++;
             }
           }
           if (idFound1 != 0) {
             res2 = stmt.executeQuery("SELECT medicinename,medicinetype,medicineqty,medicinepriceperunit FROM pharmacydb.Stock");
             while (res2.next()) {
-              if (res2.getString(1).equalsIgnoreCase(medicineNameTextFieldOfPanel4.getText()) && res2.getString(2).equalsIgnoreCase(medicineTypeTextFieldOfPanel4.getText())) {
+              if (res2.getString(1).equalsIgnoreCase((String) medicineNameTextFieldOfPanel4.getSelectedItem()) && res2.getString(2).equalsIgnoreCase(medicineTypeTextFieldOfPanel4.getText())) {
               if (res2.getInt(3) > Integer.parseInt(medicineQuantityTextFieldOfPanel4.getText())) {
                 conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb", "root", "root");
                 stmt = conn.createStatement();
                 res3 = stmt.executeQuery("SELECT medicinename,medicinetype,medicineqty,medicinepriceperunit FROM pharmacydb.Stock");
                 
                 while (res3.next()) {
-                  if (res3.getString(1).equalsIgnoreCase(medicineNameTextFieldOfPanel4.getText()) && res3.getString(2).equalsIgnoreCase(medicineTypeTextFieldOfPanel4.getText())) {
+                  if (res3.getString(1).equalsIgnoreCase((String) medicineNameTextFieldOfPanel4.getSelectedItem()) && res3.getString(2).equalsIgnoreCase(medicineTypeTextFieldOfPanel4.getText())) {
                     // System.out.println("Iteration   "+j);
                     dataPanel4[j][0] = res3.getString(1);
                     dataPanel4[j][1] = res3.getString(2);
@@ -614,7 +719,7 @@ public class Interface extends UserLogin {
                     // tt.printType("t.price must be float now     "+(mqty*priceOf1));
                     dataPanel4[j][4] = Float.toString(mqty * priceOf1);
                       ++j;
-                      medicineNameTextFieldOfPanel4.setText(null);
+                      medicineNameTextFieldOfPanel4.setSelectedItem(null);
                       medicineTypeTextFieldOfPanel4.setText(null);
                       medicineQuantityTextFieldOfPanel4.setText(null);
                     //         String updateQuery = "UPDATE pharmacydb.stock SET idstock=? ,medicinetype=?,company=?,medicineqty=?,medicinepriceperunit=?,mfgdate=?,expdate=?,weightinmgs=?  WHERE medicinename =? ";
@@ -679,9 +784,9 @@ public class Interface extends UserLogin {
             
     printRecieptButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
-              String name,type;
-              int quantity;
-              Float pricePerUnit,totalPrice;
+//              String name,type;
+//              int quantity;
+//              Float pricePerUnit,totalPrice;
        try{  
         // conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb", "root", "root");
         // // stmt = conn.createStatement();
@@ -776,6 +881,40 @@ public class Interface extends UserLogin {
     }
     });
     middPanel4.add(printRecieptButton);
+    
+//    Panel 5    
+
+    middPanel_RecommendedProducts.setLayout(new FlowLayout());
+    //middPanel.setSize(700,650);
+    middPanel_RecommendedProducts.setBackground(Color.WHITE);
+    middPanel_RecommendedProducts.setBounds(140, 70, 560, 580);
+    columnPanel5 = new String[2];
+    columnPanel5[0] = "ID";
+    columnPanel5[1] = "Name";
+    dataPanel5 = new String[100][2];
+    JTable jtable1;
+    try {
+      conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb", "root", "root");
+      stmt = conn.createStatement();
+      res05 = stmt.executeQuery("select name, sum(quantity) from pharmacydb.salerecord group by name order by sum(quantity) desc limit 100;");
+      int i = 0;
+      while (res05.next()) {
+        dataPanel5[i][0] = Integer.toString(i+1);
+        dataPanel5[i][1] = res05.getString(1);
+        i++;
+      }
+      jtable1 = new JTable(dataPanel5, columnPanel5);
+      JScrollPane sp = new JScrollPane(jtable1);
+      // sp.setPreferredSize(new Dimension(300,300));
+      middPanel_RecommendedProducts.add(sp);
+      // middPanel3_SaleRecord.add(jtab);
+      conn.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    jf.add(middPanel_RecommendedProducts);
+
+    
     // LocalTime dt=LocalTime.now();
     // middPanel4.add(dt);
     // JLabel jl=new JLabel("kkjggjkhgh");
@@ -846,20 +985,22 @@ public class Interface extends UserLogin {
     jbManageMedicine.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
         middPanel.setVisible(true);
-        middPanel1.setVisible(true);
-        middPanel2.setVisible(false);
-        middPanel3.setVisible(false);
+        middPanel1_ManageMedicine.setVisible(true);
+        middPanel2_CheckStock.setVisible(false);
+        middPanel3_SaleRecord.setVisible(false);
         middPanel4.setVisible(false);
+        middPanel_RecommendedProducts.setVisible(false);
        } });
     jbCheckStock = new JButton("Check Stock");
     jbCheckStock.setForeground(Color.WHITE);
     jbCheckStock.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
         middPanel.setVisible(true);
-        middPanel1.setVisible(false);
-        middPanel2.setVisible(true);
-        middPanel3.setVisible(false);
+        middPanel1_ManageMedicine.setVisible(false);
+        middPanel2_CheckStock.setVisible(true);
+        middPanel3_SaleRecord.setVisible(false);
         middPanel4.setVisible(false);
+        middPanel_RecommendedProducts.setVisible(false);
       }
     });
     jbCheckStock.setBorder(emptyBorder);
@@ -869,10 +1010,11 @@ public class Interface extends UserLogin {
     jbSaleRecord.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
         middPanel.setVisible(true);
-        middPanel1.setVisible(false);
-        middPanel2.setVisible(false);
-        middPanel3.setVisible(true);
+        middPanel1_ManageMedicine.setVisible(false);
+        middPanel2_CheckStock.setVisible(false);
+        middPanel3_SaleRecord.setVisible(true);
         middPanel4.setVisible(false);
+        middPanel_RecommendedProducts.setVisible(false);
       }
     });
     jbSaleRecord.setBorder(emptyBorder);
@@ -882,10 +1024,11 @@ public class Interface extends UserLogin {
     btnCustomerDeal.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
         middPanel.setVisible(true);
-        middPanel1.setVisible(false);
-        middPanel2.setVisible(false);
-        middPanel3.setVisible(false);
+        middPanel1_ManageMedicine.setVisible(false);
+        middPanel2_CheckStock.setVisible(false);
+        middPanel3_SaleRecord.setVisible(false);
         middPanel4.setVisible(true);
+        middPanel_RecommendedProducts.setVisible(false);
       }
     });
     btnCustomerDeal.setBorder(emptyBorder);
@@ -905,6 +1048,26 @@ public class Interface extends UserLogin {
     jbSaleRecord.setSize(200, 50);
     btnCustomerDeal.setSize(200, 50);
     btnLogout.setSize(200, 50);
+    
+
+    btnRecommendedProducts = new JButton("Recommends");
+    btnRecommendedProducts.setBorder(emptyBorder);
+    btnRecommendedProducts.setBackground(new Color(0,153,0));
+    btnRecommendedProducts.setSize(200, 50);
+    
+    btnRecommendedProducts.setForeground(Color.WHITE);
+    btnRecommendedProducts.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent ae) {
+        // jf.dispose();
+          middPanel.setVisible(true);
+          middPanel1_ManageMedicine.setVisible(false);
+          middPanel2_CheckStock.setVisible(false);
+          middPanel3_SaleRecord.setVisible(false);
+          middPanel4.setVisible(false);
+          middPanel_RecommendedProducts.setVisible(true);
+      }
+    });
+    
     leftPanel.setBackground(new Color(0,153,0));
     leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
     leftPanel.add(jbManageMedicine);
@@ -914,6 +1077,8 @@ public class Interface extends UserLogin {
     leftPanel.add(jbSaleRecord);
     leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
     leftPanel.add(btnCustomerDeal);
+    leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+    leftPanel.add(btnRecommendedProducts);
     leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
     leftPanel.add(btnLogout);
     leftPanel.add(Box.createRigidArea(new Dimension(0, 30)));
