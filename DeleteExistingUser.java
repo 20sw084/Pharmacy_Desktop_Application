@@ -1,4 +1,4 @@
-package Pharamacy_Management_System;
+package Pharmacy_Management_System;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
