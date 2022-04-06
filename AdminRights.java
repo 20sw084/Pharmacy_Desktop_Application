@@ -1,4 +1,4 @@
-package Pharamacy_Management_System;
+package Pharmacy_Management_System;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -14,7 +14,7 @@ public class AdminRights implements ActionListener  {
         jp=new JPanel();
         jp.setLayout(null);
 
-    ImageIcon icon = new  ImageIcon("C:/Users/Lenovo/Documents/JavaProjects/src/Pharamacy_Management_System/AdminRights.jpg");
+    ImageIcon icon = new  ImageIcon("C:/Users/Lenovo/eclipse-workspace/firstHibernate/src/Pharamacy_Management_System/AdminRights.jpg");
     Image img=icon.getImage();
     Image tempImage=img.getScaledInstance(700,650,Image.SCALE_SMOOTH);
     icon=new ImageIcon(tempImage);
