@@ -1,4 +1,4 @@
-package Pharamacy_Management_System;
+package Pharmacy_Management_System;
 import javax.swing.*;
 import java.lang.Thread;
 import java.awt.*;
@@ -22,7 +22,7 @@ public class Pharm_Manag_Sys {
     name.setForeground(new Color(0,153,0));    
     header.add(name);
     jf.add(header);
-    ImageIcon icon = new  ImageIcon("C:/Users/Lenovo/Documents/JavaProjects/src/Pharamacy_Management_System/Main.jpg");
+    ImageIcon icon = new  ImageIcon("/Pharmacy_Management_System/Main.jpg");
     Image img=icon.getImage();
     Image tempImage=img.getScaledInstance(700,650,Image.SCALE_SMOOTH);
     icon=new ImageIcon(tempImage);
